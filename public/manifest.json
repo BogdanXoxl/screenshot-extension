@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "BD",
+  "version": "1.0.0",
+  "description": "Not your fucking business",
+  "permissions": ["activeTab", "scripting", "storage", "tabs"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "commands": {
+    "take-screenshot": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+E"
+      },
+      "description": "Take a screenshot"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "css": ["styles.css"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["content.js", "styles.css"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
