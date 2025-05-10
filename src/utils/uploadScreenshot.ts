@@ -1,12 +1,12 @@
 import { UPLOAD_DEBOUNCE_INTERVAL, SERVER_URL } from "@/consts";
-import { ScreenshotData, ServerResponse } from "@/types";
+import { IScreenshotData, IServerResponse } from "@/types";
 
 let lastUploadTime = 0;
 
 // Function to upload screenshot to server
 export async function uploadScreenshot(
-  screenshotData: ScreenshotData
-): Promise<ServerResponse | undefined> {
+  screenshotData: IScreenshotData
+): Promise<IServerResponse | undefined> {
   const now = Date.now();
 
   if (now - lastUploadTime < UPLOAD_DEBOUNCE_INTERVAL) {
@@ -33,7 +33,7 @@ export async function uploadScreenshot(
       throw new Error(`Server responded with ${response.status}`);
     }
 
-    return await response.json();
+    return;
   } catch (error) {
     console.error("Error uploading screenshot:", error);
     return {

@@ -1,14 +1,23 @@
 import { uploadScreenshot } from "@/utils";
+import {
+  CAPTURE_TAB_ACTION,
+  SHOW_TOAST_ACTION,
+  TAKE_SCREENSHOT_ACTION,
+  UPLOAD_SCREENSHOT_ACTION,
+} from "@/consts";
+
+import type { IWorkerResponse } from "@/types";
 
 // Listen for the keyboard shortcut
 chrome.commands.onCommand.addListener((command) => {
-  if (command === "take-screenshot") {
+  if (command === TAKE_SCREENSHOT_ACTION) {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const activeTab = tabs[0];
       if (activeTab && activeTab.id) {
         void chrome.scripting.executeScript({
           target: { tabId: activeTab.id },
           files: ["content.js"],
+          world: "ISOLATED",
         });
         void chrome.scripting.insertCSS({
           target: { tabId: activeTab.id },
@@ -21,7 +30,7 @@ chrome.commands.onCommand.addListener((command) => {
 
 // Listen for capture-tab message from content script
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-  if (message.action !== "capture-tab") {
+  if (message.action !== CAPTURE_TAB_ACTION) {
     return;
   }
 
@@ -44,7 +53,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 
 // Listen for upload-screenshot message from content script
 chrome.runtime.onMessage.addListener((message, sender) => {
-  if (message.action !== "upload-screenshot" || !message.screenshotData) {
+  if (message.action !== UPLOAD_SCREENSHOT_ACTION || !message.screenshotData) {
     return;
   }
 
@@ -53,20 +62,19 @@ chrome.runtime.onMessage.addListener((message, sender) => {
     .then((response) => {
       console.log("Upload complete, sending toast notification", response);
 
-      if (sender.tab?.id && response) {
-        chrome.tabs.sendMessage(sender.tab.id, {
-          action: "show-toast",
-          success: response.success,
-          message: response.message,
-          url: response.url,
+      if (sender.tab?.id) {
+        chrome.tabs.sendMessage<IWorkerResponse>(sender.tab.id, {
+          action: SHOW_TOAST_ACTION,
+          success: response?.success ?? true,
+          message: response?.message ?? "",
         });
       }
     })
     .catch((error) => {
       console.error("Upload error:", error);
       if (sender.tab?.id) {
-        chrome.tabs.sendMessage(sender.tab.id, {
-          action: "show-toast",
+        chrome.tabs.sendMessage<IWorkerResponse>(sender.tab.id, {
+          action: SHOW_TOAST_ACTION,
           success: false,
           message: `Error: ${error.message}`,
         });

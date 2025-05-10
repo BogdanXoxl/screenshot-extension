@@ -1,0 +1,58 @@
+#__screenshot_overlay__ {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.1);
+  cursor: crosshair;
+  z-index: 2147483645;
+}
+
+#__screenshot_selection_box__ {
+  position: fixed;
+  border: 2px dashed #fff;
+  background: rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+  z-index: 2147483646;
+}
+
+.screenshot-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 7px;
+  color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 2147483647;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: none;
+}
+
+.screenshot-toast-success {
+  background-color: rgba(46, 204, 113, 0.2); /* green */
+}
+
+.screenshot-toast-error {
+  background-color: rgba(231, 76, 60, 0.2); /* red */
+}
+
+.screenshot-toast-icon {
+  font-size: 10px;
+  line-height: 1;
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+.screenshot-toast-hiding {
+  opacity: 0;
+  transform: translateY(10px);
+}

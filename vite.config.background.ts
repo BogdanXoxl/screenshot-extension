@@ -10,17 +10,11 @@ export default defineConfig({
     rollupOptions: {
       input: {
         background: resolve(__dirname, "src/background.ts"),
-        content: resolve(__dirname, "src/content.ts"),
       },
       output: {
         entryFileNames: "[name].js",
-        chunkFileNames: "chunks/[name]-[hash].js",
-        assetFileNames: (assetInfo) => {
-          if (assetInfo.name === "styles.css") {
-            return "styles.css";
-          }
-          return "assets/[name]-[hash][extname]";
-        },
+        inlineDynamicImports: true,
+        manualChunks: undefined,
       },
     },
   },
