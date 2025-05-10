@@ -22,10 +22,12 @@ export class App implements IApp {
     this.handleMouseUp = this.handleMouseUp.bind(this);
     this.handleMouseMove = this.handleMouseMove.bind(this);
     this.handleFinish = this.handleFinish.bind(this);
+    this.handleEscape = this.handleEscape.bind(this);
 
     this.overlay.addEventListener("mousedown", this.handleMouseDown);
     this.overlay.addEventListener("mouseup", this.handleMouseUp);
     this.overlay.addEventListener("mousemove", this.handleMouseMove);
+    window.addEventListener("keydown", this.handleEscape);
 
     this.finish = new Promise((res) => {
       this.resolveFinish = res;
@@ -42,6 +44,15 @@ export class App implements IApp {
   private handleMouseUp(_e: MouseEvent) {
     this.isDragging = false;
     this.handleFinish();
+
+    if (this.currentRect) {
+      localStorage.setItem(RECT_STORAGE_KEY, JSON.stringify(this.currentRect));
+    }
+
+    setTimeout(() => {
+      const rect = this.loadRect();
+      captureScreenshot(rect);
+    }, 50);
   }
 
   private handleMouseMove(e: MouseEvent) {
@@ -67,16 +78,8 @@ export class App implements IApp {
   private handleFinish() {
     this.overlay.remove();
     this.selectionBox?.remove();
-
-    if (this.currentRect) {
-      localStorage.setItem(RECT_STORAGE_KEY, JSON.stringify(this.currentRect));
-    }
-
-    setTimeout(() => {
-      const rect = this.loadRect();
-      captureScreenshot(rect);
-      this.resolveFinish();
-    }, 50);
+    window.removeEventListener("keydown", this.handleEscape);
+    this.resolveFinish();
   }
 
   private loadRect(): DOMRect | null {
@@ -85,6 +88,12 @@ export class App implements IApp {
       return this.currentRect || (stored ? JSON.parse(stored) : null);
     } catch {
       return null;
+    }
+  }
+
+  private handleEscape(e: KeyboardEvent) {
+    if (e.key === "Escape") {
+      this.handleFinish();
     }
   }
 }

@@ -10,6 +10,7 @@ export async function uploadScreenshot(
   const now = Date.now();
 
   if (now - lastUploadTime < UPLOAD_DEBOUNCE_INTERVAL) {
+    console.log("here");
     return;
   }
 
